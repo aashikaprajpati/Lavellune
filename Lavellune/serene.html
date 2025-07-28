@@ -4,24 +4,58 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mind Merge</title>
-  <link rel="stylesheet" href="serene.css" />
+  <link rel="stylesheet" href="serene.css">
 </head>
 <body>
+  <!-- Floating particles for ambient animation -->
+  <div class="floating-particles" id="particles"></div>
+
   <div class="container">
     <header>
-      <h1>Mind Merge</h1>
+      <h1>Serene Study Sanctuary</h1>
     </header>
 
     <section class="timer">
       <h2>Focus Timer</h2>
-      <div class="coffee-mug">
-        <svg viewBox="0 0 120 160" width="120" height="160">
-          <rect x="10" y="10" width="100" height="140" rx="20" ry="20" fill="none" stroke="#8c9db8" stroke-width="4" />
-          <path d="M110 30 q20 40 0 100" stroke="#8c9db8" stroke-width="4" fill="none" />
-          <clipPath id="mugClip"><rect x="16" y="16" width="88" height="128" rx="16" ry="16" /></clipPath>
-          <rect id="coffeeFill" x="16" y="144" width="88" height="0" fill="#6a7a95" clip-path="url(#mugClip)" rx="16" ry="16" />
+      <div class="ocean-waves">
+        <svg viewBox="0 0 140 180" width="140" height="180" class="wave-animation">
+          <!-- Ocean cup design -->
+          <defs>
+            <linearGradient id="oceanGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.8" />
+              <stop offset="50%" style="stop-color:#60a5fa;stop-opacity:0.6" />
+              <stop offset="100%" style="stop-color:#93c5fd;stop-opacity:0.4" />
+            </linearGradient>
+            <linearGradient id="waveGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#0284c7;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Cup outline -->
+          <rect x="15" y="15" width="110" height="150" rx="25" ry="25" fill="none" stroke="#3b82f6" stroke-width="3" />
+          
+          <!-- Handle -->
+          <path d="M125 40 q25 50 0 110" stroke="#3b82f6" stroke-width="3" fill="none" />
+          
+          <!-- Clipping path for liquid -->
+          <clipPath id="cupClip">
+            <rect x="21" y="21" width="98" height="138" rx="21" ry="21" />
+          </clipPath>
+          
+          <!-- Animated liquid fill -->
+          <rect id="liquidFill" x="21" y="159" width="98" height="0" fill="url(#waveGradient)" clip-path="url(#cupClip)" rx="21" ry="21">
+            <animate attributeName="height" dur="0.5s" fill="freeze" />
+            <animate attributeName="y" dur="0.5s" fill="freeze" />
+          </rect>
+          
+          <!-- Wave effect on top -->
+          <path id="waveTop" d="M21 159 Q45 155 70 159 T119 159" stroke="#0284c7" stroke-width="2" fill="none" opacity="0">
+            <animate attributeName="opacity" dur="0.5s" fill="freeze" />
+            <animateTransform attributeName="transform" type="translate" values="0,0; 0,-2; 0,0" dur="2s" repeatCount="indefinite" />
+          </path>
         </svg>
-        <div class="glass-text" id="timerDisplay">00:00</div>
+        <div class="wave-timer" id="timerDisplay">00:00</div>
       </div>
       <div class="controls">
         <input type="number" id="customTime" placeholder="Minutes" min="1" />
@@ -35,17 +69,15 @@
     <section class="playlist-affirmation">
       <div class="playlist">
         <h2>Focus Playlist</h2>
-       <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/3HH5R7Bhz21hUL7G16nK8v?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        <iframe data-testid="embed-iframe" style="border-radius:16px" src="https://open.spotify.com/embed/playlist/3HH5R7Bhz21hUL7G16nK8v?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
       </div>
       <div class="affirmation">
         <h2>Daily Affirmation</h2>
-        <p>Need a boost? Click below.</p>
-        <select id="themeSelector">
-          <option value="serenity">Serenity</option>
-          <option value="focus">Focus</option>
-          <option value="motivation">Motivation</option>
-        </select>
-        <button id="showAffirmBtn">Show Affirmation</button>
+        <p>Take a moment to center yourself with gentle words of encouragement.</p>
+        <button id="themeSelector">
+          ->
+        </button>
+        <button id="showAffirmBtn">Inspire Me</button>
       </div>
     </section>
 
@@ -75,25 +107,40 @@
       <div class="todo">
         <h2>To-Do</h2>
         <ul id="todoList"></ul>
-        <input type="text" id="todoInput" placeholder="New task..." />
-        <button onclick="addTask()">Add</button>
+        <input type="text" id="todoInput" placeholder="What would you like to accomplish?" />
+        <button onclick="addTask()">Add Task</button>
       </div>
       <div class="notes">
-        <h2>Notes</h2>
-        <textarea id="notesTextarea" placeholder="Write your notes..."></textarea>
-        <input type="file" id="fileUpload" multiple />
+        <h2>Notes & Files</h2>
+        <textarea id="notesTextarea" placeholder="Capture your thoughts and ideas..."></textarea>
+        <input type="file" id="fileUpload" multiple accept="*/*" />
         <ul id="fileList"></ul>
       </div>
     </section>
   </div>
 
-  <div id="popup" class="popup-hidden">
+  <!-- Affirmation Popup -->
+  <div id="popup" class="popup">
     <div class="popup-content">
       <span id="closePopup" class="popup-close">&times;</span>
       <p id="popupText"></p>
     </div>
   </div>
 
-  <script src="serene.js"></script>
+  <!-- Enhanced File Viewer Popup -->
+  <div id="filePopup" class="popup">
+    <div id="filePopupContent" class="file-popup-content">
+      <div class="file-popup-header">
+        <div class="file-popup-title" id="filePopupTitle">File Viewer</div>
+        <div class="file-popup-actions">
+          <button onclick="downloadFile()">Download</button>
+          <button onclick="toggleFullscreen()">Fullscreen</button>
+          <button onclick="closeFilePopup()">&times;</button>
+        </div>
+      </div>
+      <div class="file-content" id="fileContent"></div>
+    </div>
+  </div>
+<script src="serene.js"></script>
 </body>
 </html>
